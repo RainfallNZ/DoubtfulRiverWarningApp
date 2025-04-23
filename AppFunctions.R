@@ -13,7 +13,8 @@
 #'  other choices are "1_Week","2_Weeks","1_Month"
 #' @author Tim Kerr, \email{Tim.Kerr@@Rainfall.NZ}
 #' @seealso
-#' @return Describe type of object that is returned
+#' @return Data frame object ith character column of the site number and the DateTime, 
+#'  and a numeric column of the stage height
 #' @keywords Keywords 
 
 GetHopeRiverAtGlynnWyeStage <- function(Period="2_Days")

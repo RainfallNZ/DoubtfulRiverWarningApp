@@ -2,7 +2,8 @@
 #It checks for data updates every 30 minutes
 
 #Load any required libraries
-list.of.packages <- c("shiny","shinydashboard","plotly","fresh","shinycssloaders")
+list.of.packages <- c("shiny","shinydashboard","plotly","fresh","shinycssloaders",
+                      "lubridate","scales")
 #new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 #if(length(new.packages)) install.packages(new.packages,repos='https://cloud.r-project.org')
 
@@ -38,15 +39,18 @@ body <- dashboardBody(
   #Set out the app
   fluidPage(
     fluidRow(infoBoxOutput("StatusBox",width=12) %>% withSpinner()),
-    fluidRow(
-     div(class = "col-sm-12 col-md-8 col-lg-6",
-     box(plotlyOutput("RiverPlot") %>% withSpinner(),
-                width='100%',
-                title= "River depth downstream",
-                collapsible = TRUE,
-                collapsed = TRUE))
+    #fluidRow(
+     #div(class = "col-sm-12 col-md-8 col-lg-6",
+     #box(plotlyOutput("plot") %>% withSpinner(),
+     #           width='100%',
+    #            title= "River depth downstream",
+     #           collapsible = TRUE,
+      #          collapsed = TRUE))
     
-  )
+  #),
+  fluidRow(actionButton("show","Show plot")),
+  #fluidRow(div(class = "col-sm-12 col-md-8 col-lg-6",
+  #             bsModal("modalExample","Your plot", "show",plotlyOutput("RiverPlot") %>% withSpinner())))
 )
 )
 
@@ -79,13 +83,39 @@ server <- function(input, output, session) {
       box_status()['title'],box_status()['message'],icon=icon(box_status()['icon']),color=box_status()['color'], fill=TRUE
     )
   })
+  
+  HopeData <- reactive({
+    invalidateLater(600000)
+    GetHopeRiverAtGlynnWyeStage(Period="2_Weeks")
+  })
+
+  LastUpdateTime <- reactive({
+    HopeData()$DateTime %>% tail(1) %>% 
+      lubridate::parse_date_time(orders ="%Y-%m-%dT%H:%M:%S%z",exact=TRUE) %>%
+      {paste(format(.,"%I:%M %p, %A",tz="Pacific/Auckland"),
+            scales::label_ordinal()(as.numeric(format(.,"%e",tz="Pacific/Auckland"))),
+            format(.,"%B ",tz="Pacific/Auckland"))}
+  })
+  
   output$RiverPlot <- renderPlotly({
     #reactive({
-      invalidateLater(600000)
-      GetHopeRiverAtGlynnWyeStage(Period="2_Weeks") %>%
+    #  invalidateLater(600000)
+    #  GetHopeRiverAtGlynnWyeStage(Period="2_Weeks") %>%
+        HopeData() %>%  
         HopeRiverStageGraph()
     #})
     #HopeRiverStageGraph(HopeStageData()) 
+  })
+  
+  output$plot <- renderPlot({
+    hist(runif(50))
+  })
+
+  observeEvent(input$show, {
+    showModal(modalDialog(plotlyOutput("RiverPlot") %>% withSpinner(),
+                          title = "Hope River depth at Glynn Wye",
+                          footer = div(renderText({paste("last updated at:",LastUpdateTime())}),modalButton("Dismiss")),
+                          easyClose = TRUE))
   })
 }
 
