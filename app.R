@@ -47,8 +47,8 @@ body <- dashboardBody(
      #           collapsible = TRUE,
       #          collapsed = TRUE))
     
-  #),
-  fluidRow(actionButton("show","Show plot")),
+  #)#,
+  #fluidRow(actionButton("show","Show plot")),
   #fluidRow(div(class = "col-sm-12 col-md-8 col-lg-6",
   #             bsModal("modalExample","Your plot", "show",plotlyOutput("RiverPlot") %>% withSpinner())))
 )
@@ -80,7 +80,8 @@ server <- function(input, output, session) {
   
   output$StatusBox <- renderInfoBox({
     infoBox(
-      box_status()['title'],box_status()['message'],icon=icon(box_status()['icon']),color=box_status()['color'], fill=TRUE
+      box_status()['title'],box_status()['message'],icon=icon(box_status()['icon']),color=box_status()['color'], fill=TRUE,
+      actionButton("show","Show river level")
     )
   })
   

@@ -78,7 +78,7 @@ HopeRiverStageGraph <- function(StageData = HopeRiverStageData)
     add_trace(y= 0.5,type='scatter', name = "OK", fill='tozeroy',fillcolor = 'rgba(87, 196, 173, 1)',mode="none",hoverinfo='none') %>%
     add_lines(y = ~Stage, name = "River depth",line = list(color = "black",width = 2),hovertemplate="%{y:.1f} m at %{x|%H:%m %p on %b %d}") %>%
     add_annotations(text = "Cross with care",textfont= t, showarrow=FALSE,xanchor='right',yanchor='top', xref="paper", x=1,y=0.5) %>%
-    add_annotations(text = "Cross with caution",textfont= t, showarrow=FALSE,xanchor='right',yanchor='bottom', xref="paper", x=1,y=0.5) %>%
+    add_annotations(text = "Cross with extra caution",textfont= t, showarrow=FALSE,xanchor='right',yanchor='bottom', xref="paper", x=1,y=0.5) %>%
     add_annotations(text = "Do not cross",textfont= t, showarrow=FALSE,xanchor='right',yanchor='bottom', xref="paper", x=1,y=0.8) %>%
     layout(
       showlegend=FALSE,
@@ -108,7 +108,21 @@ HopeRiverStageGraph <- function(StageData = HopeRiverStageData)
       
       yaxis = list(title = "River Depth (m)",
                    fixedrange=FALSE, range = YAxisInitialRange),#make the limits based on the original view
-      annotations = list(text = "<a href = 'https://www.ecan.govt.nz/data/riverflow//sitedetails/64608'>ECan data source</a>", x= 1, y=-0.5, xref="paper",yref="paper", showarrow=FALSE)) 
+      annotations = list(text = c("<a href = 'https://www.ecan.govt.nz/data/riverflow//sitedetails/64608'>ECan data source</a>",
+                                  "<a href = 'https://Rainfall.NZ'>Rainfall.NZ<br> Logo</a>"),
+                         x= c(1,0), y=c(-0.5,1), xref="paper",yref="paper", showarrow=FALSE,opacity=c(1,0)),
+      images = list(
+       #list(source="https://images.plot.ly/language-icons/api-home/python-logo.png",
+       list(source = "/RainfallNZLogoV2.png",
+            xref = "paper",
+            yref = "paper",
+            x= 0,
+            y= 1,
+            sizex = 0.2,
+            sizey = 0.2,
+            opacity = 0.8
+       ))
+) 
   
   return(p)
 }
