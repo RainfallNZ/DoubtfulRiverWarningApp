@@ -18,6 +18,7 @@ HopeStageData <- reactive({
 
 #Substitute in my custom colours for the named colours used by shinydashboard
 mytheme <- create_theme(
+
   adminlte_color(
     green = 'rgba(87, 196, 173, 1)',
     orange ='rgba(237, 162, 71, 1)',
@@ -33,9 +34,14 @@ mytheme <- create_theme(
 # and the latest stage plot from the Hope River
 
 body <- dashboardBody(
+
   #Make sure my customised theme is used
   use_theme(mytheme),
-  
+  tags$head(
+    tags$style(
+      "body {overflow-y: hidden;}"
+    )
+  ),
   #Set out the app
   fluidPage(
     fluidRow(infoBoxOutput("StatusBox",width=12) %>% withSpinner()),
@@ -61,17 +67,17 @@ server <- function(input, output, session) {
   # set box attributes based on status
   box_status <- reactive({
     if (CrossingDanger(HopeStageData()) == "Danger") {
-      c(title="Danger",
-        message="Do not cross the Boyle",
+      c(title=paste("Danger as of",LastUpdateTime()),
+        message="Do not cross the Boyle, postpone your trip",
         color='red',
         icon="thumbs-down")
     } else if (CrossingDanger(HopeStageData()) == "Caution"){
-      c(title="Caution",
-        message="Do not cross the Boyle from the Doubtful carpark, instead cross the Boyle north of the bluffs where the Boyle is braided, then use the Tui track and a marked route to crossing the Doubtful River where it too is braided",
+      c(title=paste("Caution as of",LastUpdateTime()),
+        message="'Do not cross the Boyle from the Doubtful carpark. Instead follow the blue route on Trap.NZ to cross the Boyle north of the bluffs above the confluence with the Doubtful then follow the Tui track to a crossing of the Doubtful river. If in doubt do not cross",
         color='orange',
         icon="triangle-exclamation")
     } else {
-      c(title="OK",
+      c(title=paste("OK as of",LastUpdateTime()),
         message="You can probably cross the Boyle with care directly from the Doubtful carpark",
         color='green',
         icon="thumbs-up")
